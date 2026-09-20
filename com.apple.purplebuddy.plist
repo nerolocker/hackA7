@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AnimateLanugageChoice</key>
+	<false/>
+	<key>AssistantPresented</key>
+	<true/>
+	<key>DictationPresented</key>
+	<true/>
+	<key>ForceNoBuddy</key>
+	<true/>
+	<key>GuessedCountry</key>
+	<dict>
+		<key>at</key>
+		<date>2026-09-20T09:12:28Z</date>
+		<key>countries</key>
+		<array>
+			<string>RU</string>
+		</array>
+	</dict>
+	<key>HSA2UpgradeMiniBuddy3Ran</key>
+	<true/>
+	<key>Passcode4Presented</key>
+	<false/>
+	<key>PaymentMiniBuddy4Ran</key>
+	<true/>
+	<key>SetupDone</key>
+	<true/>
+	<key>SetupFinishedAllSteps</key>
+	<true/>
+	<key>SkipSetup</key>
+	<true/>
+	<key>UserChoseLanguage</key>
+	<true/>
+	<key>WebKitAcceleratedDrawingEnabled</key>
+	<false/>
+	<key>WiFiPresented</key>
+	<true/>
+	<key>lastPrepareLaunchSentinel</key>
+	<array>
+		<date>2026-09-20T09:58:54Z</date>
+		<integer>1</integer>
+	</array>
+	<key>setupMigratorVersion</key>
+	<integer>9</integer>
+</dict>
+</plist>
