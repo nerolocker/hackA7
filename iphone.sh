@@ -161,53 +161,6 @@ do_reapply() {
   ok "Done. Home screen appears in ~10-15 sec (verify: ./iphone.sh check)."
 }
 
-# ============================================================================
-# zebra — manual Zebra install (device dpkg tools are old)
-# ============================================================================
-do_zebra() {
-  sep
-  local STAGE="$DIR/zebra_stage"
-  [ -d "$STAGE/Applications" ] || fail "stage $STAGE missing (Zebra package not downloaded)"
-  ssh_r "echo __SSH_OK" >/dev/null 2>&1 || fail "SSH is dead — need checkra1n + iproxy"
-
-  if ssh_r 'dpkg -s xyz.willy.zebra 2>/dev/null | grep -q "install ok installed"' >/dev/null 2>&1; then
-    ok "Zebra already installed — refreshing icons"
-    ssh_r '/usr/bin/uicache -a >/dev/null 2>&1; killall SpringBoard' >/dev/null 2>&1
-    return 0
-  fi
-
-  info "Uploading Zebra.app..."
-  ssh_r 'cp /var/lib/dpkg/status /var/lib/dpkg/status.bak 2>/dev/null; mkdir -p /var/lib/dpkg/info' >/dev/null
-  ( cd "$STAGE" && tar --no-xattrs -cf - . ) | ssh_r 'cd / && tar -xf -' >/dev/null 2>&1 || true
-  ssh_r 'ls -d /Applications/Zebra.app >/dev/null 2>&1' >/dev/null || fail "Zebra.app did not appear"
-
-  info "Registering in dpkg..."
-  ( cd "$STAGE" && find . -mindepth 1 | while read -r p; do q="${p#./}"; if [ -d "$p" ]; then echo "/$q/"; else echo "/$q"; fi; done ) \
-    | ssh_r 'cat > /var/lib/dpkg/info/xyz.willy.zebra.list' >/dev/null
-  ssh_r 'cat > /var/lib/dpkg/info/xyz.willy.zebra.postinst; chmod 755 /var/lib/dpkg/info/xyz.willy.zebra.postinst' < "$STAGE/postinst_bin" >/dev/null
-  ssh_r 'grep -q "^Package: xyz.willy.zebra$" /var/lib/dpkg/status || { printf "\n" >> /var/lib/dpkg/status; cat >> /var/lib/dpkg/status; }' <<'EOF' >/dev/null
-Package: xyz.willy.zebra
-Status: install ok installed
-Priority: Optional
-Section: Packaging
-Installed-Size: 15032
-Maintainer: Zebra Team <team@getzbra.com>
-Architecture: iphoneos-arm
-Version: 1.1.36
-Depends: dpkg, uikittools, firmware (>= 9.0)
-Description: A Useful Package Manager
-Name: Zebra
-Author: Zebra Team <team@getzbra.com>
-Tag: compatible::9.0-16.6
-EOF
-  ssh_r '/var/lib/dpkg/info/xyz.willy.zebra.postinst configure' >/dev/null 2>&1 || true
-  ssh_r 'printf "deb http://getzbra.com/repo/ ./\n" > /etc/apt/sources.list.d/zebra.list' >/dev/null 2>&1 || true
-  ssh_r '/usr/bin/uicache -a 2>&1 | tail -1' 2>&1 | grep -v 'Permanently' | tail -1
-  ok "Zebra installed. Respringing..."
-  ssh_r 'killall SpringBoard' >/dev/null 2>&1 || true
-}
-
-# ============================================================================
 print_help() {
   cat <<'HELP'
 iphone.sh — helper for iPhone 5s / checkra1n / iOS 12.5.8 (macOS + Linux)
@@ -215,7 +168,6 @@ iphone.sh — helper for iPhone 5s / checkra1n / iOS 12.5.8 (macOS + Linux)
   ./iphone.sh            interactive menu
   ./iphone.sh check      check utilities, USB, tunnel, SSH, device status
   ./iphone.sh reapply    re-apply bypass (daemon patch + flags + respring)
-  ./iphone.sh zebra      install Zebra if it's missing
   ./iphone.sh help       this help
 
 Host requirements:
@@ -238,7 +190,6 @@ do_menu() {
       "" \
       " 1) Check system (utilities, USB, tunnel, SSH, status)" \
       " 2) Re-apply bypass (after reboot / re-restore)" \
-      " 3) Install Zebra (if missing)" \
       " 4) Show help" \
       " 0) Exit" \
       "" \
@@ -247,7 +198,6 @@ do_menu() {
     case "$choice" in
       1) check_utils; usb_present && ok "iPhone visible via USB" || warn "iPhone NOT visible via USB"; start_iproxy; device_status ;;
       2) check_utils; start_iproxy; do_reapply ;;
-      3) check_utils; start_iproxy; do_zebra ;;
       4) print_help ;;
       0) info "Bye."; exit 0 ;;
       *) warn "Unknown choice: $choice" ;;
