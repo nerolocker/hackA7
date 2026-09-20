@@ -19,7 +19,6 @@ with **checkra1n** (rootful). Works from **macOS and Linux**.
 ./iphone.sh          # interactive menu
 ./iphone.sh check    # utilities, USB, tunnel, SSH, device status
 ./iphone.sh reapply  # re-apply bypass (after restore / erased flags)
-./iphone.sh zebra    # install Zebra if missing
 ```
 
 Before running: phone jailbroken via checkra1n (SSH on port 44) and plugged in
@@ -43,7 +42,6 @@ apt install libimobiledevice-utils usbmuxd openssh-client
 | `com.apple.purplebuddy.plist` | "Setup complete" flags (`ForceNoBuddy`, `SetupDone`, ...) |
 | `com.apple.springboard.plist` | Disable auto-lock (handy while working) |
 | `askpass.sh` | SSH password helper |
-| `zebra_stage/` + `zebra_1.1.36_arm.deb` | Zebra manual-install payload |
 
 ## Gotchas
 
